@@ -1,0 +1,520 @@
+/* Common Components: Buttons, Cards, Inputs, Toast */
+
+/* Skeleton Loader */
+.skeleton {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 100%;
+    display: inline-block;
+    position: relative;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: var(--border-radius-md);
+}
+
+.skeleton-text {
+    height: 1rem;
+    width: 80%;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-box {
+    width: 100%;
+    height: 100%;
+}
+
+/* Common Buttons */
+.cta-button {
+    background: var(--color-primary);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.cta-button:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    background: var(--color-primary-dark);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-main);
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.1);
+    color: var(--color-primary);
+}
+
+/* Product Card */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    position: relative;
+    z-index: 1;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg, var(--color-primary), transparent, var(--color-primary));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.product-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.product-card:hover::before {
+    opacity: 1;
+}
+
+.product-img-wrapper {
+    position: relative;
+    aspect-ratio: 1/1.2;
+    overflow: hidden;
+    background: #f9f9f9;
+}
+
+.product-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge-container-hover {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+}
+
+.badge-promo,
+.badge-new {
+    color: white;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border-radius: 4px;
+}
+
+.badge-promo {
+    background: var(--color-accent);
+}
+
+.badge-new {
+    background: var(--color-primary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.overlay-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(4px);
+}
+
+.product-card:hover .overlay-hover {
+    opacity: 1;
+}
+
+.btn-quick-view {
+    background: white;
+    color: var(--color-primary);
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius-md);
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transform: translateY(20px);
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-card:hover .btn-quick-view {
+    transform: translateY(0);
+}
+
+.product-info-premium {
+    padding: 1.5rem;
+    text-align: right;
+}
+
+.category-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.product-info-premium h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.current-price {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--color-primary);
+}
+
+.old-price {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+}
+
+/* Forms & Tables */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius-sm);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+}
+
+/* Toast */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 3000;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-width: 300px;
+}
+
+.toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+/* Floating Actions */
+.floating-actions {
+    position: fixed;
+    bottom: 30px;
+    right: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 2000;
+}
+
+.float-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    border: none;
+    position: relative;
+    text-decoration: none;
+}
+
+.float-btn:hover {
+    transform: scale(1.1) translateY(-5px);
+}
+
+.whatsapp-float {
+    background: #25d366;
+}
+
+.whatsapp-float .pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #25d366;
+    border-radius: 50%;
+    z-index: -1;
+    animation: float-pulse 2s infinite;
+}
+
+@keyframes float-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+}
+
+.scroll-top-btn {
+    background: white;
+    color: var(--color-text-main);
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+    transform: scale(0);
+    opacity: 0;
+}
+
+.scroll-top-btn.visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.float-tooltip {
+    position: absolute;
+    right: 75px;
+    background: #1a1a2e;
+    color: white;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+}
+
+.float-btn:hover .float-tooltip {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 500px) {
+    .floating-actions {
+        bottom: 20px;
+        right: 15px;
+    }
+
+    .float-btn {
+        width: 54px;
+        height: 54px;
+        font-size: 1.6rem;
+    }
+}
+
+/* Bottom Navigation Bar — Premium Mobile */
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.08);
+    display: none;
+    z-index: 2500;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bottom-nav-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.bn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--color-text-light);
+    gap: 4px;
+    flex: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.bn-item i {
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.bn-item span {
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.bn-item.active {
+    color: var(--color-primary);
+}
+
+.bn-item.active i {
+    transform: translateY(-4px);
+}
+
+/* Search Center Button */
+.bn-search-item {
+    margin-top: -35px;
+}
+
+.bn-search-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem !important;
+    box-shadow: 0 8px 20px rgba(230, 0, 18, 0.3);
+    border: 5px solid white;
+    transition: all 0.3s;
+}
+
+/* WhatsApp Premium Button */
+.ali-cta-btn.whatsapp {
+    background: #25d366;
+    color: white !important;
+    padding: 14px 28px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.25);
+    animation: pulse-soft 2s infinite ease-in-out;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+}
+
+.ali-cta-btn.whatsapp:hover {
+    background: #20ba5a;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+}
+
+.bn-search-item:active .bn-search-icon {
+    transform: scale(0.9);
+}
+
+.bn-badge {
+    position: absolute;
+    top: 2px;
+    right: 50%;
+    margin-right: -18px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}

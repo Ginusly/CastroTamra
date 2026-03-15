@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="كاسترو للأثاث - فخامة بلمسة عصرية. اكتشف تفاصيل الأثاث الراقي المصمم بعناية ليناسب ذوقك الرفيع.">
+    <title>كاسترو للأثاث | فخامة بلمسة عصرية</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ginusly.github.io/CastroTamra/">
+    <meta property="og:title" content="كاسترو للأثاث | فخامة بلمسة عصرية">
+    <meta property="og:description"
+        content="كاسترو للأثاث - فخامة بلمسة عصرية. اكتشف تفاصيل الأثاث الراقي المصمم بعناية ليناسب ذوقك الرفيع.">
+    <meta property="og:image" content="https://ginusly.github.io/CastroTamra/assets/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ginusly.github.io/CastroTamra/">
+    <meta property="twitter:title" content="كاسترو للأثاث | فخامة بلمسة عصرية">
+    <meta property="twitter:description"
+        content="كاسترو للأثاث - فخامة بلمسة عصرية. اكتشف تفاصيل الأثاث الراقي المصمم بعناية ليناسب ذوقك الرفيع.">
+    <meta property="twitter:image" content="https://ginusly.github.io/CastroTamra/assets/logo.png">
+
+    <link rel="icon" href="assets/logo.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Security Header -->
+    <style id="security-layer">
+        body {
+            display: none !important;
+        }
+    </style>
+    <script>
+        (function () {
+            // Check if site is saved locally
+            if (window.location.protocol === "file:") {
+                document.documentElement.innerHTML = `
+                    <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 20px; direction: rtl;">
+                        <h1 style="color: #d32f2f; font-size: 3rem; margin-bottom: 20px;">⚠️ تم اكتشاف محاولة نسخ غير قانونية</h1>
+                        <p style="font-size: 1.2rem; max-width: 600px;">عذراً، لا يمكن تشغيل هذا الموقع من نسخة محملة محلياً. يرجى تصفح الموقع عبر الرابط الرسمي لحماية حقوق الملكية.</p>
+                        <div style="margin-top: 30px; padding: 20px; border: 1px dashed #444; border-radius: 10px; opacity: 0.6;">
+                            Security Status: Protected Copy Detected
+                        </div>
+                    </div>
+                `;
+                window.stop();
+                throw new Error("Local copy detected.");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <!-- Scroll Progress -->
+    <div class="scroll-progress-container">
+        <div id="scroll-bar" class="scroll-progress-bar"></div>
+    </div>
+
+    <!-- Header -->
+    <header></header>
+
+    <!-- App Container -->
+    <main id="app"></main>
+
+    <!-- Footer -->
+    <footer id="footer"></footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav id="bottom-nav"></nav>
+
+    <!-- Search Overlay -->
+    <div id="search-overlay"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/firebase.js"></script>
+    <script src="js/data.js"></script>
+    <script type="module" src="js/security.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/templates_common.js"></script>
+    <script src="js/templates_identity.js"></script>
+    <script src="js/templates_home.js"></script>
+    <script src="js/templates_product.js"></script>
+    <script src="js/templates_admin_pages.js"></script>
+    <script src="js/templates_admin.js"></script>
+    <script src="js/templates_deals.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/actions_admin.js"></script>
+    <script src="js/actions_deals.js"></script>
+    <script src="js/actions_site.js"></script>
+    <script src="js/theme_editor.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

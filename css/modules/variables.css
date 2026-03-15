@@ -1,0 +1,48 @@
+:root {
+    --color-primary: #e60012;
+    /* Rich Red (AliExpress Style) */
+    --color-primary-dark: #b3000e;
+    --color-secondary: #ffffff;
+    --color-accent: #ff4d4f;
+    --color-success: #52c41a;
+    --color-info: #1890ff;
+    --color-background: #f4f4f4;
+    --color-surface: #ffffff;
+    --color-text-main: #222222;
+    --color-text-light: #555555;
+    --color-text-muted: #999999;
+    --color-border: #dddddd;
+    --color-border-soft: #f0f0f0;
+
+    --font-heading: 'Almarai', sans-serif;
+    --font-body: 'Tajawal', sans-serif;
+
+    /* Responsive Spacing Tokens */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: clamp(0.75rem, 2vw, 1rem);
+    --spacing-md: clamp(1.5rem, 4vw, 2.5rem);
+    --spacing-lg: clamp(3rem, 8vw, 5rem);
+    --spacing-xl: clamp(5rem, 12vw, 10rem);
+
+    --header-main-height: 80px;
+    --header-nav-height: 50px;
+    --header-total-height: calc(var(--header-main-height) + var(--header-nav-height));
+
+    --border-radius-sm: 4px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 24px;
+    --border-radius-xl: 40px;
+
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+
+    --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    --color-primary-soft: rgba(230, 0, 18, 0.1);
+}
+
+@keyframes pulse-soft {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
+}
