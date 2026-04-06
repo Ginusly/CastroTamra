@@ -29,3 +29,10 @@
 
 /* 9. Developer Advertisement */
 @import url('modules/dev-ad.css');
+
+/* 10. Mobile & Accessibility Fixes */
+@import url('modules/mobile.css');
+
+/* 11. Perfection & Premium Animations */
+@import url('modules/perfection.css');
+

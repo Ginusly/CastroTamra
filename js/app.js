@@ -52,4 +52,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1500);
 
     console.log('Castro App Initialized ✅');
+
+    // SEARCH TYPING ANIMATION (Perfection Polish)
+    const hints = ["طاولات خشبية...", "غرف نوم إيطالية...", "أرقى أنواع السجاد...", "كراسي مكتب مريحة..."];
+    let hintIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    
+    function typeHint() {
+        const input = document.querySelector('.search-bar');
+        const overlayInput = document.querySelector('.search-overlay-input');
+        if (!input && !overlayInput) return;
+        
+        const target = input || overlayInput;
+        const currentHint = hints[hintIdx];
+        
+        if (isDeleting) {
+            target.placeholder = "ابحث عن " + currentHint.substring(0, charIdx--);
+            if (charIdx < 0) {
+                isDeleting = false;
+                hintIdx = (hintIdx + 1) % hints.length;
+            }
+        } else {
+            target.placeholder = "ابحث عن " + currentHint.substring(0, charIdx++);
+            if (charIdx > currentHint.length) {
+                isDeleting = true;
+                setTimeout(typeHint, 2000); 
+                return;
+            }
+        }
+        setTimeout(typeHint, isDeleting ? 40 : 80);
+    }
+    setTimeout(typeHint, 3000);
 });

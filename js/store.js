@@ -9,7 +9,12 @@ const STORE = {
     settings: JSON.parse(localStorage.getItem('castro_settings')) || INITIAL_SETTINGS,
     currentView: 'home', // home, category, product, admin, about, contact, faq, custom-order, deal
     currentParams: {},
-    adminPage: 'overview', // overview, products, deals, settings, banners
+    uiState: JSON.parse(localStorage.getItem('castro_ui_state')) || {
+        activeModalId: null,
+        modalData: null,
+        adminPage: 'overview'
+    },
+    renderPending: false, // Flag to defer renders while modals are open
     theme: (() => {
         const defaultTheme = {
             colors: {
@@ -113,6 +118,7 @@ const STORE = {
 };
 
 function saveStore() {
+    localStorage.setItem('castro_ui_state', JSON.stringify(STORE.uiState || {}));
     localStorage.setItem('castro_products', JSON.stringify(STORE.products));
     localStorage.setItem('castro_categories', JSON.stringify(STORE.categories));
     localStorage.setItem('castro_settings', JSON.stringify(STORE.settings));
@@ -136,14 +142,33 @@ let _unsubLogs = null;
  * Load initial data from localStorage cache (instant, no network wait)
  */
 function loadCachedData() {
-    const cachedProducts = JSON.parse(localStorage.getItem('castro_products'));
-    if (cachedProducts && cachedProducts.length > 0) {
-        STORE.products = cachedProducts;
-    }
-    const cachedCats = JSON.parse(localStorage.getItem('castro_categories'));
-    if (cachedCats && cachedCats.length > 0) {
-        STORE.categories = cachedCats;
-    }
+    try {
+        const cachedUiString = localStorage.getItem('castro_ui_state');
+        if (cachedUiString) {
+            const cachedUi = JSON.parse(cachedUiString);
+            if (cachedUi) STORE.uiState = { ...STORE.uiState, ...cachedUi };
+        }
+    } catch(e) { console.warn('Corrupted UI state in localStorage', e); }
+
+    try {
+        const cachedProductsString = localStorage.getItem('castro_products');
+        if (cachedProductsString) {
+            const cachedProducts = JSON.parse(cachedProductsString);
+            if (cachedProducts && cachedProducts.length > 0) {
+                STORE.products = cachedProducts;
+            }
+        }
+    } catch(e) {}
+
+    try {
+        const cachedCatsString = localStorage.getItem('castro_categories');
+        if (cachedCatsString) {
+            const cachedCats = JSON.parse(cachedCatsString);
+            if (cachedCats && cachedCats.length > 0) {
+                STORE.categories = cachedCats;
+            }
+        }
+    } catch(e) {}
 }
 
 /**
@@ -153,7 +178,6 @@ function loadCachedData() {
 async function loadDataFromFirebase() {
     if (!window.castroDb) {
         console.warn('[Firebase] castroDb not ready. Waiting...');
-        // Retry after 500ms (firebase.js module may still be loading)
         await new Promise(r => setTimeout(r, 600));
         if (!window.castroDb) {
             console.error('[Firebase] Still not ready. Using cache only.');
@@ -165,20 +189,32 @@ async function loadDataFromFirebase() {
     const db = window.castroDb;
 
     try {
-        const { collection, onSnapshot } = await import(
+        const { collection, onSnapshot, doc } = await import(
             "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
         );
 
-        // ── Unsubscribe any previous listeners (e.g. Vite HMR) ──
-        if (_unsubProducts) { _unsubProducts(); _unsubProducts = null; }
-        if (_unsubCategories) { _unsubCategories(); _unsubCategories = null; }
-        if (_unsubSettings) { _unsubSettings(); _unsubSettings = null; }
-        if (_unsubDeals) { _unsubDeals(); _unsubDeals = null; }
-        if (_unsubBanners) { _unsubBanners(); _unsubBanners = null; }
-        if (_unsubAnn) { _unsubAnn(); _unsubAnn = null; }
+        // ── Unsubscribe any previous listeners ──
+        if (_unsubProducts) _unsubProducts();
+        if (_unsubCategories) _unsubCategories();
+        if (_unsubSettings) _unsubSettings();
+        if (_unsubDeals) _unsubDeals();
+        if (_unsubBanners) _unsubBanners();
+        if (_unsubAnn) _unsubAnn();
+        if (_unsubAdmins) _unsubAdmins();
+        if (_unsubLogs) _unsubLogs();
 
-        // ── Products ──
-        _unsubProducts = onSnapshot(collection(db, "products"), (snapshot) => {
+        const safeOnSnapshot = (ref, callback, label) => {
+            return onSnapshot(ref, callback, (err) => {
+                if (err.code === 'permission-denied') {
+                    console.warn(`[Firebase] Permission Denied for ${label}. Check Security Rules.`);
+                } else {
+                    console.error(`[Firebase] Listener Error for ${label}:`, err);
+                }
+            });
+        };
+
+        // ── Subscribe with individual error boundaries ──
+        _unsubProducts = safeOnSnapshot(collection(db, "products"), (snapshot) => {
             const products = [];
             snapshot.forEach(doc => products.push({ ...doc.data(), id: doc.id }));
             if (products.length > 0) {
@@ -186,10 +222,9 @@ async function loadDataFromFirebase() {
                 localStorage.setItem('castro_products', JSON.stringify(products));
             }
             if (typeof render === 'function') render();
-        });
+        }, "products");
 
-        // ── Categories ──
-        _unsubCategories = onSnapshot(collection(db, "categories"), (snapshot) => {
+        _unsubCategories = safeOnSnapshot(collection(db, "categories"), (snapshot) => {
             const cats = [];
             snapshot.forEach(doc => cats.push({ ...doc.data(), id: doc.id }));
             if (cats.length > 0) {
@@ -197,31 +232,26 @@ async function loadDataFromFirebase() {
                 localStorage.setItem('castro_categories', JSON.stringify(cats));
             }
             if (typeof render === 'function') render();
-        });
+        }, "categories");
 
-        // ── Settings (Single Document) ──
-        const { doc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-        _unsubSettings = onSnapshot(doc(db, "settings", "global"), (snapshot) => {
+        _unsubSettings = safeOnSnapshot(doc(db, "settings", "global"), (snapshot) => {
             if (snapshot.exists()) {
                 STORE.settings = snapshot.data();
                 localStorage.setItem('castro_settings', JSON.stringify(STORE.settings));
                 if (typeof updateMeta === 'function') updateMeta();
                 if (typeof render === 'function') render();
-                console.log('[Firebase] Settings updated');
             }
-        });
+        }, "settings/global");
 
-        // ── Deals ──
-        _unsubDeals = onSnapshot(collection(db, "deals"), (snapshot) => {
+        _unsubDeals = safeOnSnapshot(collection(db, "deals"), (snapshot) => {
             const deals = [];
             snapshot.forEach(doc => deals.push({ ...doc.data(), id: doc.id }));
             STORE.deals = deals;
             localStorage.setItem('castro_deals', JSON.stringify(deals));
             if (typeof render === 'function') render();
-        });
+        }, "deals");
 
-        // ── Banners ──
-        _unsubBanners = onSnapshot(collection(db, "banners"), (snapshot) => {
+        _unsubBanners = safeOnSnapshot(collection(db, "banners"), (snapshot) => {
             const banners = [];
             snapshot.forEach(doc => banners.push({ ...doc.data(), id: doc.id }));
             if (banners.length > 0) {
@@ -229,10 +259,9 @@ async function loadDataFromFirebase() {
                 localStorage.setItem('castro_banners', JSON.stringify(banners));
             }
             if (typeof render === 'function') render();
-        });
+        }, "banners");
 
-        // ── Announcement ──
-        _unsubAnn = onSnapshot(doc(db, "settings", "announcement"), (snapshot) => {
+        _unsubAnn = safeOnSnapshot(doc(db, "settings", "announcement"), (snapshot) => {
             if (snapshot.exists()) {
                 STORE.announcement = snapshot.data();
                 localStorage.setItem('castro_announcement', JSON.stringify(STORE.announcement));
@@ -241,26 +270,24 @@ async function loadDataFromFirebase() {
                 localStorage.removeItem('castro_announcement');
             }
             if (typeof render === 'function') render();
-        });
+        }, "settings/announcement");
 
-        // ── Admin Users (Developers) ──
-        if (typeof _unsubAdmins !== 'undefined') _unsubAdmins = onSnapshot(collection(db, "admins"), (snapshot) => {
+        _unsubAdmins = safeOnSnapshot(collection(db, "admins"), (snapshot) => {
             const adms = [];
             snapshot.forEach(doc => adms.push({ ...doc.data(), uid: doc.id }));
             STORE.allAdmins = adms.sort((a,b) => (b.lastSeen || 0) - (a.lastSeen || 0));
             if (typeof render === 'function') render();
-        });
+        }, "admins");
 
-        // ── Development Logs ──
-        if (typeof _unsubLogs !== 'undefined') _unsubLogs = onSnapshot(collection(db, "logs"), (snapshot) => {
+        _unsubLogs = safeOnSnapshot(collection(db, "logs"), (snapshot) => {
             const logs = [];
             snapshot.forEach(doc => logs.push({ ...doc.data(), id: doc.id }));
             STORE.devLogs = logs.sort((a, b) => b.timestamp - a.timestamp);
             if (typeof render === 'function') render();
-        });
+        }, "logs");
 
     } catch (err) {
-        console.error('[Firebase] Failed to start listeners:', err);
+        console.error('[Firebase] Fatal setup error:', err);
         loadCachedData();
     }
 }

@@ -155,3 +155,12 @@ function displayPhone(phone) {
         return clean;
     }
 }
+
+/**
+ * Checks if any modal is currently visible on screen.
+ * This is used to prevent background background renders from closing active edit sessions.
+ */
+function isAnyModalOpen() {
+    const modals = document.querySelectorAll('.ap-modal-overlay');
+    return Array.from(modals).some(m => m.style.display === 'flex' || m.classList.contains('active'));
+}

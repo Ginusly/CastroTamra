@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 🛡️ SECURITY HELPER FUNCTIONS
+    
+    // Check if user is an admin with 'active' status
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid)) && 
+             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.status == 'active';
+    }
+    
+    // Check if user is one of the Super Admins
+    function isSuper() {
+      return request.auth != null && (
+        request.auth.token.email == 'adamnhar2011@gmail.com' || 
+        request.auth.token.email == 'reehamnhar@gmail.com' ||
+        request.auth.token.email == 'notadams9@gmail.com'
+      );
+    }
+
+    // 📦 PUBLIC COLLECTIONS: Products, Categories, Settings, Banners, Deals
+    // Everyone can read; only admins/super-admins can write.
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isSuper();
+    }
+    
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isSuper();
+    }
+    
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isSuper();
+    }
+    
+    match /banners/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isSuper();
+    }
+    
+    match /deals/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isSuper();
+    }
+
+    // 👤 ADMINS COLLECTION
+    match /admins/{uid} {
+      // Allow users to read/update their own profile (for registration/last-seen)
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      
+      // Allow Super Admin to manage all admins
+      allow read, write: if isSuper();
+      
+      // Allow Admins to see who other admins are
+      allow list: if isAdmin();
+    }
+
+    // 📝 LOGS & INTERACTIONS
+    match /logs/{id} {
+      allow read, create: if isAdmin() || isSuper();
+    }
+    
+    match /interactions/{id} {
+      allow create: if true; // Public can submit analytics
+      allow read: if isAdmin() || isSuper();
+    }
+  }
+}

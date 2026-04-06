@@ -3,7 +3,7 @@ function navigate(view, params = {}) {
     STORE.currentView = view;
     STORE.currentParams = params;
     window.location.hash = `#${view}${params.id ? `/${params.id}` : ''}${params.slug ? `/${params.slug}` : ''}`;
-    render();
+    render(true);
     window.scrollTo(0, 0);
 }
 
@@ -36,10 +36,24 @@ function toggleMobileNav() {
     }
 }
 
-function render() {
-    // Reveal body once rendering initiates
+function render(force = false) {
+    // 🛡️ Reveal body IMMEDIATELY on first render attempt
     document.getElementById('security-layer')?.remove();
-    updateMeta();
+
+    const app = document.getElementById('app');
+
+    // 🛡️ Prevent render from closing open modals UNLESS the app is currently empty (initial load)
+    // This allows us to restore a modal state safely on refresh without getting stuck on a white screen.
+    const appIsEmpty = !app || app.innerHTML.trim() === "";
+    if (!force && !appIsEmpty && typeof isAnyModalOpen === 'function' && isAnyModalOpen()) {
+        STORE.renderPending = true;
+        console.log('[Render] Deferring render while modal is open.');
+        return;
+    }
+    STORE.renderPending = false;
+
+    try {
+        updateMeta();
     const app = document.getElementById('app');
     const header = document.querySelector('header');
 
@@ -142,6 +156,7 @@ function render() {
         app.style.marginTop = '0';
         app.style.paddingTop = '0';
         app.innerHTML = TEMPLATES.devRegister(STORE.currentParams.secret);
+        requestAnimationFrame(() => app.classList.add('loaded'));
         return;
     }
 
@@ -176,17 +191,23 @@ function render() {
                     </div>
                 </div>
             `;
+            requestAnimationFrame(() => app.classList.add('loaded'));
             return;
         }
 
         // 2. Pending Approval
         if (STORE.adminUser.status === 'pending') {
             app.innerHTML = TEMPLATES.adminPending();
+            requestAnimationFrame(() => app.classList.add('loaded'));
             return;
         }
 
         // 3. Active Admin
         app.innerHTML = TEMPLATES.admin();
+        if (typeof restoreAdminState === 'function') {
+            requestAnimationFrame(restoreAdminState);
+        }
+        requestAnimationFrame(() => app.classList.add('loaded'));
         return;
     } else {
         footer.style.display = 'block';
@@ -256,7 +277,12 @@ function render() {
         
         // Trigger reveal
         requestAnimationFrame(() => app.classList.add('loaded'));
-    }
+    } // end else
+} catch (err) {
+    console.error('[Render Error]', err);
+    // Ensure even in error, the security layer is gone
+    document.getElementById('security-layer')?.remove();
+}
 }
 
 function adjustHeaderHeight() {

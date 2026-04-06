@@ -36,11 +36,22 @@ function openDealModal(id) {
     }
 
     modal.style.display = 'flex';
+    if (!STORE.uiState) STORE.uiState = {};
+    STORE.uiState.activeModalId = 'deal-modal';
+    STORE.uiState.modalData = { dealId: id || null, fields: {} };
+    saveStore();
+    if (typeof bindModalPersistence === 'function') bindModalPersistence('deal-modal');
 }
 
 function closeDealModal() {
     const m = document.getElementById('deal-modal');
     if (m) m.style.display = 'none';
+    if (STORE.uiState) {
+        STORE.uiState.activeModalId = null;
+        STORE.uiState.modalData = null;
+        saveStore();
+    }
+    if (STORE.renderPending) render(true);
 }
 
 async function saveDeal() {
@@ -76,7 +87,7 @@ async function saveDeal() {
 
     saveStore();
     closeDealModal();
-    render();
+    render(true);
     showToast('✅ تم حفظ العرض بنجاح!', 'success');
 
     // Sync to Firestore
@@ -93,7 +104,7 @@ async function handleDeleteDeal(id) {
     STORE.deals = (STORE.deals || []).filter(d => d.id !== id);
     if (STORE.announcement && STORE.announcement.dealId === id) STORE.announcement.dealId = null;
     saveStore();
-    render();
+    render(true);
     showToast('تم حذف العرض');
 
     // Sync to Firestore
@@ -146,6 +157,7 @@ function openBannerModal(id) {
 function closeBannerModal() {
     const m = document.getElementById('banner-modal');
     if (m) m.style.display = 'none';
+    if (STORE.renderPending) render(true);
 }
 
 function updateBannerPreview() {
@@ -211,7 +223,7 @@ async function saveBanner() {
 
     saveStore();
     closeBannerModal();
-    render();
+    render(true);
     showToast('✅ تم حفظ الشريحة بنجاح!', 'success');
 
     // Sync to Firestore
@@ -228,7 +240,7 @@ async function handleDeleteBanner(id) {
     STORE.banners = (STORE.banners || []).filter(b => b.id !== id);
     if (STORE.currentSlide >= STORE.banners.length) STORE.currentSlide = 0;
     saveStore();
-    render();
+    render(true);
     showToast('تم حذف الشريحة');
 
     // Sync to Firestore
@@ -249,7 +261,7 @@ async function moveBanner(idx, direction) {
     [banners[idx], banners[newIdx]] = [banners[newIdx], banners[idx]];
     STORE.banners = banners;
     saveStore();
-    render();
+    render(true);
 
     // Re-save both to Firestore to preserve order (if you had an order field, but here we use the list)
     // Actually, Firestore collections don't guarantee order unless we have a 'sort' field.
@@ -308,7 +320,7 @@ async function saveAnnouncement() {
     };
     STORE.announcement = annData;
     saveStore();
-    render();
+    render(true);
     showToast('✅ تم حفظ الإعلان!', 'success');
 
     // Sync to Firestore
@@ -323,7 +335,7 @@ async function saveAnnouncement() {
 async function clearAnnouncement() {
     STORE.announcement = null;
     saveStore();
-    render();
+    render(true);
     showToast('تم مسح الإعلان');
 
     // Sync to Firestore

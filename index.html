@@ -62,6 +62,15 @@
                 throw new Error("Local copy detected.");
             }
         })();
+        
+        // Fail-safe to remove white screen after 3 seconds in case of errors
+        setTimeout(function() {
+            var sl = document.getElementById('security-layer');
+            if (sl) {
+                console.warn('Security layer fail-safe triggered. Removing...');
+                sl.remove();
+            }
+        }, 3000);
     </script>
 </head>
 

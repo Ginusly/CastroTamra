@@ -5,11 +5,13 @@ import {
 } from './firebase.js';
 
 // Configuration (Sensitive info from .env handled by build tool)
-let SUPER_ADMIN_EMAIL = "adamnhar2011@gmail.com";
+// Configuration
+let SUPER_ADMINS = ["adamnhar2011@gmail.com", "reehamnhar@gmail.com", "notadams9@gmail.com"];
 let REGISTER_SECRET = "castro_secret_2026";
 
 try {
-    SUPER_ADMIN_EMAIL = import.meta.env.VITE_SUPER_ADMIN_EMAIL || SUPER_ADMIN_EMAIL;
+    const envSuper = import.meta.env.VITE_SUPER_ADMIN_EMAILS;
+    if (envSuper) SUPER_ADMINS = envSuper.split(',').map(e => e.trim());
 } catch (e) { }
 
 try {
@@ -20,59 +22,108 @@ try {
  * Initialize Identity Session
  */
 onAuthStateChanged(auth, async (user) => {
+    const oldUser = STORE.adminUser ? STORE.adminUser.email : null;
+    
     // Reveal body once security check is active
     document.getElementById('security-layer')?.remove();
     if (user) {
         console.log("👤 User Logged In:", user.email);
 
         // Fetch Admin Profile from Firestore
-        const adminRef = doc(db, "admins", user.uid);
-        const snap = await getDoc(adminRef);
+        try {
+            const adminRef = doc(db, "admins", user.uid);
+            const snap = await getDoc(adminRef);
 
-        if (snap.exists()) {
-            const data = snap.data();
-            STORE.adminUser = {
-                uid: user.uid,
-                email: user.email,
-                name: user.displayName,
-                photo: user.photoURL,
-                status: data.status, // 'pending' or 'active'
-                permissions: data.permissions || {},
-                isSuper: user.email === SUPER_ADMIN_EMAIL
-            };
-
-            // Auto-grant all permissions to Super Admin
-            if (STORE.adminUser.isSuper) {
-                STORE.adminUser.status = 'active';
-                STORE.adminUser.permissions = {
-                    manage_products: true,
-                    manage_categories: true,
-                    manage_deals: true,
-                    manage_admins: true,
-                    approve_devs: true,
-                    view_sales: true,
-                    full_access: true
+            if (snap.exists()) {
+                const data = snap.data();
+                STORE.adminUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    name: user.displayName,
+                    photo: user.photoURL,
+                    status: data.status, // 'pending' or 'active'
+                    permissions: data.permissions || {},
+                    isSuper: SUPER_ADMINS.includes(user.email)
                 };
-            }
 
-            sessionStorage.setItem('castro_admin_verified', (STORE.adminUser.status === 'active') ? 'true' : 'false');
-            sessionStorage.setItem('castro_dev_mode', 'true');
-        } else {
-            // New User or non-admin
-            STORE.adminUser = null;
-            sessionStorage.removeItem('castro_admin_verified');
+                // Auto-grant all permissions to Super Admin
+                if (STORE.adminUser.isSuper) {
+                    STORE.adminUser.status = 'active';
+                    STORE.adminUser.permissions = {
+                        manage_products: true,
+                        manage_categories: true,
+                        manage_deals: true,
+                        manage_admins: true,
+                        approve_devs: true,
+                        view_sales: true,
+                        full_access: true
+                    };
+                }
+
+                sessionStorage.setItem('castro_admin_verified', (STORE.adminUser.status === 'active') ? 'true' : 'false');
+                sessionStorage.setItem('castro_dev_mode', 'true');
+            } else {
+                // New User or non-admin document doesn't exist yet
+                if (SUPER_ADMINS.includes(user.email)) {
+                     console.log("⭐ Super Admin First-time Login detected. Granting temporary access to initialize.");
+                     STORE.adminUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName,
+                        photo: user.photoURL,
+                        status: 'active',
+                        permissions: { full_access: true, manage_products: true, manage_categories: true, manage_deals: true, manage_admins: true, approve_devs: true, view_sales: true },
+                        isSuper: true
+                    };
+                    sessionStorage.setItem('castro_admin_verified', 'true');
+                    sessionStorage.setItem('castro_dev_mode', 'true');
+                } else {
+                    console.warn("⚠️ No admin document found for:", user.email);
+                    STORE.adminUser = null;
+                    sessionStorage.removeItem('castro_admin_verified');
+                }
+            }
+        } catch (err) {
+             // If we can't even read the admin doc (because of rules), still grant access to Super Admin based on email
+            if (SUPER_ADMINS.includes(user.email)) {
+                console.log("⭐ Super Admin Rule-lock detected. Granting local-only access based on email.");
+                STORE.adminUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    name: user.displayName,
+                    photo: user.photoURL,
+                    status: 'active',
+                    permissions: { full_access: true, manage_products: true, manage_categories: true, manage_deals: true, manage_admins: true, approve_devs: true, view_sales: true },
+                    isSuper: true
+                };
+            } else {
+                console.error("Firebase Permission/Fetch Error:", err);
+                STORE.adminUser = null;
+            }
         }
     } else {
-        STORE.adminUser = null;
-        sessionStorage.clear();
+        // Only clear if we were previously logged in as an admin
+        if (STORE.adminUser) {
+            STORE.adminUser = null;
+            sessionStorage.removeItem('castro_admin_verified');
+            sessionStorage.removeItem('castro_dev_mode');
+        }
     }
 
     // If Super Admin, pre-fetch all admins
     if (STORE.adminUser && STORE.adminUser.isSuper) {
-        window.fetchAdmins();
+        window.fetchAdmins().catch(e => console.error("Auto-fetch admins failed:", e));
     }
 
-    render();
+    // 🛡️ STOP: Only render if we are on a page that DEPENDS on auth (admin)
+    // or if the auth status evolved.
+    const wasLoggedIn = !!oldUser;
+    const isLoggedIn = !!STORE.adminUser;
+    
+    if (wasLoggedIn !== isLoggedIn || STORE.currentView === 'admin') {
+        console.log("🛡️ Auth state shift detected. Re-rendering...");
+        render();
+    }
 });
 
 /**
@@ -90,7 +141,7 @@ window.requestDevAccess = async function () {
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
-        const isSuper = user.email === SUPER_ADMIN_EMAIL;
+        const isSuper = SUPER_ADMINS.includes(user.email);
 
         // Check if already exists
         const adminRef = doc(db, "admins", user.uid);
@@ -265,10 +316,34 @@ window.openAdminEditModal = function (uid) {
     document.getElementById('perm-super').checked = false;
 
     modal.style.display = 'flex';
+
+    // Persist UI State
+    if (typeof STORE !== 'undefined') {
+        if (!STORE.uiState) STORE.uiState = {};
+        STORE.uiState.activeModalId = 'admin-edit-modal';
+        STORE.uiState.modalData = { title: 'إدارة الصلاحيات', adminUid: uid, fields: {} };
+        
+        // Snapshot Checkboxes
+        ['perm-products', 'perm-categories', 'perm-deals', 'perm-sales', 'perm-super'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) STORE.uiState.modalData.fields[id] = el.checked;
+        });
+        
+        if (typeof window.saveStore === 'function') window.saveStore();
+        if (typeof window.bindModalPersistence === 'function') window.bindModalPersistence('admin-edit-modal');
+    }
 };
 
 window.closeAdminEditModal = function () {
     document.getElementById('admin-edit-modal').style.display = 'none';
+    if (typeof STORE !== 'undefined') {
+        if (STORE.uiState) {
+            STORE.uiState.activeModalId = null;
+            STORE.uiState.modalData = null;
+        }
+        if (typeof window.saveStore === 'function') window.saveStore();
+        if (STORE.renderPending && typeof render === 'function') render(true);
+    }
 };
 
 window.saveAdminPermissions = async function () {

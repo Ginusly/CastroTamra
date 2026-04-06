@@ -57,7 +57,7 @@ Object.assign(TEMPLATES, {
                     <nav class="ap-nav">
                         <span class="ap-nav-section-title">الرئيسية</span>
                         ${nav.map(item => `
-                            <div class="ap-nav-item ${STORE.adminPage === item.id ? 'active' : ''}"
+                            <div class="ap-nav-item ${STORE.uiState.adminPage === item.id ? 'active' : ''}"
                                  onclick="switchAdminPage('${item.id}')">
                                 <i class="ph ${item.icon}"></i>
                                 <span>${item.label}</span>
@@ -78,11 +78,17 @@ Object.assign(TEMPLATES, {
 
                     <div class="ap-sidebar-footer">
                         <div class="ap-user-card">
-                            <img src="${JSON.parse(sessionStorage.getItem('castro_admin_user'))?.photo || 'https://ui-avatars.com/api/?name=' + (JSON.parse(sessionStorage.getItem('castro_admin_user'))?.name || 'Admin')}" class="ap-user-avatar" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                            <div class="ap-user-info">
-                                <div class="ap-user-name">${JSON.parse(sessionStorage.getItem('castro_admin_user'))?.name || 'المدير العام'}</div>
-                                <div class="ap-user-role">Admin</div>
-                            </div>
+                            ${(() => {
+                                let adm = {};
+                                try { adm = JSON.parse(sessionStorage.getItem('castro_admin_user')) || {}; } catch(e){}
+                                return `
+                                    <img src="${adm.photo || 'https://ui-avatars.com/api/?name=' + (adm.name || 'Admin')}" class="ap-user-avatar" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                                    <div class="ap-user-info">
+                                        <div class="ap-user-name">${adm.name || 'المدير العام'}</div>
+                                        <div class="ap-user-role">Admin</div>
+                                    </div>
+                                `;
+                            })()}
                         </div>
                         <button class="ap-btn-ghost" onclick="sessionStorage.clear(); location.reload();" style="width:100%; margin-top:15px; border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.6)">
                             <i class="ph ph-sign-out"></i> خروج آمن
@@ -98,7 +104,7 @@ Object.assign(TEMPLATES, {
                             <button class="ap-sidebar-toggle" onclick="toggleAdminSidebar()">
                                 <i class="ph ph-list"></i>
                             </button>
-                            <div class="ap-topbar-title">${pageTitle[STORE.adminPage] || 'لوحة التحكم'}</div>
+                            <div class="ap-topbar-title">${pageTitle[STORE.uiState.adminPage] || 'لوحة التحكم'}</div>
                         </div>
                         <div class="ap-topbar-right">
                             <div class="ap-search">
@@ -117,7 +123,7 @@ Object.assign(TEMPLATES, {
 
                     <!-- Content -->
                     <div class="ap-content">
-                        ${(pages[STORE.adminPage] || pages.overview)()}
+                        ${(pages[STORE.uiState.adminPage] || pages.overview)()}
                     </div>
                 </div>
 

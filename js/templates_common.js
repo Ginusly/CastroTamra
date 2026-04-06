@@ -112,24 +112,51 @@ const TEMPLATES = {
     `,
 
     about: () => `
-        <div class="about-hero" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&q=80&w=2000'); background-size: cover; background-position: center; color: white; text-align: center; padding: 100px 0;">
-            <div class="container animate-up">
-                <h1 style="font-size: 3.5rem; margin-bottom: 20px;">قصة كاسترو للأثاث</h1>
-                <p style="font-size: 1.2rem;">نحن هنا لنحول بيوتكم إلى مساحات من الجمال والراحة.</p>
+        <div class="about-premium-hero" style="position: relative; overflow: hidden; padding: 160px 0 100px; background: #0a0a0b; color: white; text-align: center;">
+            <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&q=80&w=2000'); background-size: cover; background-position: center; opacity: 0.25; filter: grayscale(1) contrast(1.2);"></div>
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, #0a0a0b 100%);"></div>
+            <div class="container" style="position: relative; z-index: 2;">
+                <span class="label-txt" style="color: #ff4d4f; letter-spacing: 6px; font-size: 0.8rem; margin-bottom: 15px;">الفخامة بلمسة عصرية</span>
+                <h1 style="font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; margin-bottom: 25px; line-height: 1.1;">قصة كاسترو <span style="color: #ff4d4f;">للمفروشات</span></h1>
+                <p style="font-size: 1.25rem; max-width: 700px; margin: 0 auto; line-height: 1.8; color: rgba(255,255,255,0.7);">منذ اللحظة الأولى، وضعنا نُصب أعيننا تعريفاً جديداً للفخامة والراحة في كل منزل وكل مكتب.</p>
             </div>
         </div>
-        <div class="container animate-up section-padding">
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 60px; align-items: center;">
-                <div>
-                    <h2 style="font-size: 2.5rem; margin-bottom: 20px;">من نحن؟</h2>
-                    <p style="font-size: 1.1rem; color: var(--color-text-light);">منذ تأسيسنا، ونحن نسعى جاهدين لتقديم أفضل حلول الأثاث المكتبي والمنزلي التي تجمع بين الجودة العالية والتصميم المبتكر.</p>
-                    <p style="font-size: 1.1rem; color: var(--color-text-light); margin-top: 20px;">نحرص على استخدام أجود أنواع الأخشاب والأقمشة، ومع فريق من المصممين والحرفيين المهرة.</p>
+
+        <div class="section-padding" style="background: #0a0a0b; color: white;">
+            <div class="container">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                    <div class="glass-card-premium" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 40px; border-radius: 30px; backdrop-filter: blur(10px);">
+                        <i class="ph ph-crown" style="font-size: 3rem; color: #ff4d4f; margin-bottom: 20px;"></i>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">رؤيتنا</h3>
+                        <p style="color: rgba(255,255,255,0.6); line-height: 1.7;">أن نكون الوجهة الأولى لكل من يبحث عن التميز والفرادة في عالم الأثاث، واضعين معايير عالمية للجودة بلمسة محلية.</p>
+                    </div>
+                    <div class="glass-card-premium" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 40px; border-radius: 30px; backdrop-filter: blur(10px);">
+                        <i class="ph ph-sketch-logo" style="font-size: 3rem; color: #ff4d4f; margin-bottom: 20px;"></i>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">احترافية التصميم</h3>
+                        <p style="color: rgba(255,255,255,0.6); line-height: 1.7;">كل قطعة ننتجها تمر بسلسلة من مراحل التدقيق الفني والجمالي، لضمان توازن مثالي بين الشكل والوظيفة.</p>
+                    </div>
+                    <div class="glass-card-premium" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 40px; border-radius: 30px; backdrop-filter: blur(10px);">
+                        <i class="ph ph-hand-heart" style="font-size: 3rem; color: #ff4d4f; margin-bottom: 20px;"></i>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">ثقة العملاء</h3>
+                        <p style="color: rgba(255,255,255,0.6); line-height: 1.7;">أكثر من 500 عميل سعيد حول المنطقة يضعون ثقتهم بنا، ونحن نعتبر كل عميل شريكاً في قصة نجاحنا المستمرة.</p>
+                    </div>
                 </div>
-                <div>
-                    <div style="background: white; padding: 30px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); text-align: center;">
-                        <i class="ph ph-users" style="font-size: 3rem; color: var(--color-primary);"></i>
-                        <h3 style="font-size: 2.5rem; margin: 10px 0;">+500</h3>
-                        <p>عميل سعيد</p>
+                
+                <div style="margin-top: 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=1000" style="width: 100%; border-radius: 40px; box-shadow: 0 50px 100px rgba(0,0,0,0.5);">
+                        <div style="position: absolute; bottom: -30px; left: -30px; background: #ff4d4f; padding: 30px; border-radius: 25px; box-shadow: 0 15px 30px rgba(230,0,18,0.3);">
+                            <h4 style="font-size: 2.5rem; color: white;">+12</h4>
+                            <span style="color: rgba(255,255,255,0.8); font-size: 0.9rem; font-weight: 700;">عاماً من الخبرة</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 2.8rem; margin-bottom: 25px;">لمسة فنية في كل <span style="color: #ff4d4f;">ركن</span></h2>
+                        <p style="color: rgba(255,255,255,0.6); line-height: 1.8; font-size: 1.1rem; margin-bottom: 30px;">نحن نؤمن أن الأثاث ليس مجرد قطع خشبية، بل هو روح المكان. لذلك نكرس جهودنا لاختيار المواد التي تعمر طويلاً وتعكس ذوقك الفخم.</p>
+                        <div style="display: flex; gap: 20px;">
+                            <button class="cta-button" onclick="navigate('category/all')">اكتشف المجموعة</button>
+                            <button class="icon-btn-premium" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white;" onclick="navigate('contact')">تواصل معنا</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -137,19 +164,50 @@ const TEMPLATES = {
     `,
 
     contact: () => `
-        <div class="container animate-up section-padding" style="padding-top: var(--spacing-xl);">
-            <div class="section-header">
-                <h1>تواصل معنا</h1>
-                <p>نحن هنا للمساعدة. أرسل لنا رسالة وسنقوم بالرد عليك.</p>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                <div class="admin-card">
-                    <form onsubmit="event.preventDefault(); showToast('تم استلام رسالتك، شكراً لك!');">
-                        <div class="form-group"><label>الاسم بالكامل</label><input type="text" required></div>
-                        <div class="form-group"><label>رقم الهاتف</label><input type="tel" required></div>
-                        <div class="form-group"><label>الرسالة</label><textarea rows="5" required></textarea></div>
-                        <button type="submit" class="cta-button" style="width: 100%; justify-content: center;">إرسال الرسالة</button>
-                    </form>
+        <div class="section-padding" style="padding-top: 150px; background: #f8fafc;">
+            <div class="container animate-up">
+                <div class="section-header">
+                    <h1>تواصل مع النخبة</h1>
+                    <p>فريقنا مستعد لتلبية طلباتكم الخاصة والإجابة على كافة استفساراتكم.</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; margin-top: 50px;">
+                    <div style="background: white; padding: 50px; border-radius: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.05);">
+                        <h3 style="font-size: 1.8rem; margin-bottom: 30px; font-weight: 900;">أرسل استفسارك</h3>
+                        <form onsubmit="event.preventDefault(); showToast('تم استلام رسالتك، شكراً لك!'); this.reset();">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group"><label class="ap-form-label">الاسم بالكامل</label><input type="text" class="ap-form-input" style="background:#f1f5f9" required></div>
+                                <div class="form-group"><label class="ap-form-label">رقم الهاتف</label><input type="tel" class="ap-form-input" style="background:#f1f5f9" required></div>
+                            </div>
+                            <div class="form-group" style="margin-top:20px"><label class="ap-form-label">الموضوع</label><input type="text" class="ap-form-input" style="background:#f1f5f9"></div>
+                            <div class="form-group" style="margin-top:20px"><label class="ap-form-label">الرسالة</label><textarea rows="5" class="ap-form-textarea" style="background:#f1f5f9" required></textarea></div>
+                            <button type="submit" class="cta-button" style="width: 100%; justify-content: center; margin-top: 30px; height: 60px; font-size: 1.1rem; border-radius: 18px;">
+                                <i class="ph ph-paper-plane-tilt" style="margin-left: 10px;"></i> إرسال رسالتك الآن
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 25px;">
+                        <div class="contact-card-premium" style="background: #1a1a2e; color: white; padding: 40px; border-radius: 40px; box-shadow: 0 25px 50px rgba(26,26,46,0.25);">
+                            <i class="ph ph-map-pin-line" style="font-size: 2.5rem; color: #ff4d4f; margin-bottom: 20px;"></i>
+                            <h4 style="font-size: 1.4rem; margin-bottom: 10px;">موقعنا</h4>
+                            <p style="opacity: 0.7;">طمرة، شارع القدس - مجمع كاسترو للأثاث</p>
+                            <a href="https://maps.google.com" target="_blank" style="display: inline-block; margin-top: 15px; color: #ff4d4f; font-weight: 800; text-decoration: none;">عرض على الخريطة <i class="ph ph-arrow-left"></i></a>
+                        </div>
+                        <div class="contact-card-premium" style="background: white; padding: 40px; border-radius: 40px; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+                            <i class="ph ph-chats-circle" style="font-size: 2.5rem; color: #07c160; margin-bottom: 20px;"></i>
+                            <h4 style="font-size: 1.4rem; margin-bottom: 10px;">دعم المبيعات</h4>
+                            <p style="color: #64748b;">تحدث مباشرة مع فريق المبيعات عبر واتساب لطلب صور حقيقية.</p>
+                            <a href="tel:${STORE.settings.phone}" style="display: flex; align-items: center; gap: 10px; margin-top: 15px; font-size: 1.3rem; font-weight: 900; color: #1a1a2e; text-decoration: none;">
+                                <i class="ph ph-phone"></i> ${displayPhone(STORE.settings.phone)}
+                            </a>
+                        </div>
+                        <div class="contact-card-premium" style="background: white; padding: 40px; border-radius: 40px; border: 1px solid #f1f5f9;">
+                            <i class="ph ph-clock" style="font-size: 2.5rem; color: #64748b; margin-bottom: 20px;"></i>
+                            <h4 style="font-size: 1.4rem; margin-bottom: 10px;">ساعات العمل</h4>
+                            <p style="color: #64748b;">يومياً من 9:00 صباحاً وحتى 10:00 مساءً<br>الجمعة: عطلة أسبوعية</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
